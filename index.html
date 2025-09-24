@@ -5,16 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Proefstuderen – Inschrijven & Dashboard</title>
 
-  <link rel="icon" href='data:image/svg+xml;utf8,
+<link rel="icon" href='data:image/svg+xml;utf8,
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <text y="50" font-size="52">🦋</text>
-</svg>'
-    />
+</svg>' />
+
   
-  <style>
+<style>
   :root{
     --bg:#0f172a; --card:#111827; --muted:#94a3b8; --primary:#22c55e; --danger:#ef4444; --accent:#38bdf8;
     --text:#e5e7eb; --soft:#1f2937; --ring:#334155;
+    --secondary-bg:#374151; --secondary-border:#4b5563; --secondary-text:#e5e7eb;
   }
   *{box-sizing:border-box} body{
     margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;
@@ -28,19 +29,19 @@
   .card{background:var(--card); border:1px solid var(--soft); border-radius:16px; padding:18px}
   .card h2{margin:0 0 12px 0; font-size:18px}
   label{display:block; font-size:14px; color:var(--muted); margin:10px 0 6px}
-  input,select,textarea{
+  input,select{
     width:100%; background:#0b1220; border:1px solid var(--ring); color:var(--text);
     padding:10px 12px; border-radius:10px; outline:none; font-size:14px;
   }
-  input:focus,select:focus,textarea:focus{border-color:#60a5fa; box-shadow:0 0 0 3px rgba(96,165,250,.15)}
+  input:focus,select:focus{border-color:#60a5fa; box-shadow:0 0 0 3px rgba(96,165,250,.15)}
   .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
   .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px; border-radius:10px;
     border:1px solid #1f2937; cursor:pointer; user-select:none; font-weight:600; transition:transform .02s ease}
   .btn:active{transform:translateY(1px)}
   .primary{background:var(--primary); color:#062a12; border-color:#16a34a}
-  .ghost{background:#0b1220}
-  .danger{background:var(--danger); border-color:#b91c1c}
-  .accent{background:var(--accent); color:#062a12; border-color:#0891b2}
+  .secondary{background:var(--secondary-bg); border-color:#4b5563; color:#e5e7eb}
+  .danger{background:#ef4444; border-color:#b91c1c}
+  .accent{background:#38bdf8; color:#062a12; border-color:#0891b2}
   small{color:var(--muted)}
   .grid{display:grid; gap:8px}
   .lessons{display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:8px}
@@ -58,8 +59,10 @@
   .right{text-align:right}
   .kicker{font-size:12px; color:#93c5fd}
   .flex{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
-  .code{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,"Liberation Mono","Courier New",monospace; background:#0b1220; border:1px dashed #334155; padding:8px 10px; border-radius:8px}
+  .code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; background:#0b1220; border:1px dashed #334155; padding:8px 10px; border-radius:8px}
   .footer{margin:24px auto; max-width:1100px; padding:0 16px 40px; color:#94a3b8; font-size:12px}
+  .hint{font-size:12px;color:#a1a1aa}
+  @media (max-width:960px){ main{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -73,6 +76,7 @@
   <!-- INSCHRIJVEN -->
   <section class="card">
     <h2>Boeking maken</h2>
+
     <div class="row">
       <div>
         <label>Voor- en achternaam</label>
@@ -80,28 +84,47 @@
       </div>
       <div>
         <label>Studentnummer</label>
-        <input id="sid" placeholder="Bijv. 1234567" />
-      </div>
-    </div>
-    <div class="row">
-      <div>
-        <label>Track (meest interessant)</label>
-        <select id="track">
-          <option value="">Kies…</option>
-          <option>Creating Value for Data (CVD)</option>
-          <option>Digital Business Innovation (DBI)</option>
-          <option>Cybersecurity (interesse)</option>
-        </select>
-      </div>
-      <div>
-        <label>E-mail (voor bevestiging/annuleren, optioneel)</label>
-        <input id="email" placeholder="naam@hr.nl" />
+        <input id="sid" inputmode="numeric" pattern="[0-9]*" placeholder="Bijv. 1234567" />
       </div>
     </div>
 
-    <label>Proeflesmoment</label>
+    <!-- Verplicht e-mail -->
+    <div class="row">
+      <div>
+        <label>E-mail (verplicht)</label>
+        <input id="email" type="email" placeholder="bijv. naam@student.hva.nl" required />
+        <small class="muted">Gebruik je schoolmail a.u.b.</small>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Track interesse – éénmalig -->
+    <div id="trackBlock">
+      <label>Track (meest interessant) — éénmalig</label>
+      <div class="row">
+        <div>
+          <select id="track">
+            <option value="">Kies…</option>
+            <option>Creating Value for Data (CVD)</option>
+            <option>Digital Business Innovation (DBI)</option>
+            <option>Cybersecurity (interesse)</option>
+          </select>
+        </div>
+        <div class="flex" style="margin-top:0">
+          <button class="btn secondary" id="saveTrackBtn">Sla track op</button>
+          <small class="hint">Je kunt deze keuze later niet meer wijzigen.</small>
+        </div>
+      </div>
+    </div>
+    <div id="trackLock" style="display:none">
+      <label>Track (vastgelegd)</label>
+      <input id="trackFixed" disabled class="hint" />
+      <small class="hint">Wil je dit aanpassen? Mail de coördinator.</small>
+    </div>
+
+    <label style="margin-top:8px">Proeflesmoment</label>
     <select id="lesson"></select>
-    <small class="muted">Capaciteit: CVD max. 4 per les · DBI max. 16 per les</small>
+    <small class="muted">Maximaal 2 boekingen per student · CVD max. 4 p/les · DBI max. 16 p/les</small>
 
     <div class="flex" style="margin-top:12px">
       <button class="btn primary" id="bookBtn">Boek plek</button>
@@ -114,7 +137,7 @@
     <div class="row">
       <div>
         <label>Studentnummer</label>
-        <input id="cancelSid" placeholder="1234567" />
+        <input id="cancelSid" inputmode="numeric" pattern="[0-9]*" placeholder="1234567" />
       </div>
       <div>
         <label>Boekingscode</label>
@@ -141,21 +164,21 @@
         <input id="adminCode" type="password" placeholder="•••••••" />
       </div>
       <div class="flex" style="margin-top:28px">
-        <button class="btn ghost" id="loginBtn">Ontgrendel</button>
+        <button class="btn secondary" id="loginBtn">Ontgrendel</button>
         <small class="muted">Voer de beheerdercode in om te ontgrendelen.</small>
       </div>
     </div>
 
     <div id="adminArea" style="display:none">
       <div class="flex" style="margin:10px 0 4px">
-        <button class="btn accent" id="exportCsv">Export CSV</button>
-        <button class="btn ghost" id="exportJson">Export JSON</button>
-        <label class="btn ghost">
+        <button class="btn secondary" id="exportCsv">Export CSV</button>
+        <button class="btn secondary" id="exportJson">Export JSON</button>
+        <label class="btn secondary">
           Import JSON <input type="file" id="importJson" accept="application/json" style="display:none">
         </label>
       </div>
 
-      <div class="grid" id="adminStats"></div>
+      <div id="adminStats" class="grid"></div>
 
       <table id="adminTable">
         <thead>
@@ -179,13 +202,13 @@
    CONFIG – pas hier aan
 ======================= */
 const CONFIG = {
-  // Admin-code is verborgen als SHA-256 hash van @Ladygeek2025
+  // SHA-256 hash van je admin-code (hier staat de hash van @Ladygeek2025 als voorbeeld)
   ADMIN_CODE_HASH: "DEA4703805DC17616E36355E4F6D86699323655ED9B6168C1F5A3DE2D7CEC932",
-  // API koppeling (Google Apps Script Web App)
-  API_BASE: "https://script.google.com/macros/s/AKfycbw6JwROLuWY51KyUs_MEWBXPXUvDGpT-FZJPquMttI4vMoGTx2u8TERjXQ-ucsktjYG/exec", // zet hier later je /exec URL
-  API_KEY:  "XyZ_Proef2025!", // en hier je API key
+  // <— vul hier jouw Apps Script Web App /exec-URL in:
+  API_BASE: "https://script.google.com/macros/s/AKfycbw6JwROLuWY51KyUs_MEWBXPXUvDGpT-FZJPquMttI4vMoGTx2u8TERjXQ-ucsktjYG/exec",
+  API_KEY:  "XyZ_Proef2025!",
+  MAX_BOOKINGS_PER_SID: 2,
   lessons: [
-    // CVD (max 4)
     { id:"CVD-MA-STAT-1", track:"CVD", name:"CVD · Ma · Statistiek 09:00–13:00 (KZ.B2.311)", capacity:4 },
     { id:"CVD-MA-STAT-2", track:"CVD", name:"CVD · Ma · Statistiek 09:00–13:00 (KZ.D3.140)", capacity:4 },
     { id:"CVD-MA-DE-1",   track:"CVD", name:"CVD · Ma · Data Engineering 09:00–13:00 (KZ.C1.280)", capacity:4 },
@@ -194,28 +217,23 @@ const CONFIG = {
     { id:"CVD-WO-STAT-2", track:"CVD", name:"CVD · Wo · Statistiek 09:00–13:00 (KZ.C1.280)", capacity:4 },
     { id:"CVD-WO-DE-1",   track:"CVD", name:"CVD · Wo · Data Engineering 13:30–17:30 (KZ.C1.280)", capacity:4 },
     { id:"CVD-WO-DE-2",   track:"CVD", name:"CVD · Wo · Data Engineering 14:00–18:00 (KZ.D6.175)", capacity:4 },
-
-    // DBI (max 16)
-    { id:"DBI-MA-DTDT",   track:"DBI", name:"DBI · Ma · Digitale Transformatie & Design Thinking (+ Onderzoeksvaardigheden) 10:00–14:00 (KZ.C0.150)", capacity:16 },
-    { id:"DBI-WO-SAI",    track:"DBI", name:"DBI · Wo · Statistiek & AI 10:00–13:00 (KZ.C0.150)", capacity:16 },
-    { id:"DBI-VR-PMF",    track:"DBI", name:"DBI · Vr · Projectmanagement & Feedback 10:00–14:00 (KZ.C0.150)", capacity:16 },
+    { id:"DBI-MA-DTDT",   track:"DBI", name:"DBI · Ma · Digitale Transformatie & Design Thinking (+ Onderzoeksvaardigheden) 09:00–14:00 (KZ.C0.150)", capacity:16 },
+    { id:"DBI-WO-SAI",    track:"DBI", name:"DBI · Wo · Statistiek & AI 09:00–13:00 (KZ.C0.150)", capacity:16 },
+    { id:"DBI-VR-PMF",    track:"DBI", name:"DBI · Vr · Projectmanagement & Feedback 09:00–14:00 (KZ.C0.150)", capacity:16 },
   ],
 };
+const STORAGE_KEY = "proefstuderen.bookings.v7";
 
-const STORAGE_KEY = "proefstuderen.bookings.v3";
-
-/* ================
-   Storage helpers
-================ */
-function loadBookings(){
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
-  catch(e){ return []; }
-}
+/* ===== Helpers ===== */
+function loadBookings(){ try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch(e){ return []; } }
 function saveBookings(rows){ localStorage.setItem(STORAGE_KEY, JSON.stringify(rows)); }
+function normSid(v){ return String(v || '').replace(/\D+/g, ''); } // alleen cijfers
+function lessonById(id){ return CONFIG.lessons.find(l=>l.id===id); }
+function uid(len=4){ const s = Math.random().toString(36).slice(2).toUpperCase(); const s2 = Math.random().toString(36).slice(2).toUpperCase(); return `${s.slice(0,len)}-${s2.slice(0,len)}`; }
+async function sha256Hex(str){ const enc = new TextEncoder().encode(str); const buf = await crypto.subtle.digest("SHA-256", enc); return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("").toUpperCase(); }
+function isValidEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s||"").trim()); }
 
-/* ======================
-   DOM refs & utilities
-====================== */
+/* ===== DOM refs ===== */
 const els = {
   lessonSel: document.getElementById("lesson"),
   availability: document.getElementById("availability"),
@@ -223,8 +241,12 @@ const els = {
   bookMsg: document.getElementById("bookMsg"),
   name: document.getElementById("name"),
   sid: document.getElementById("sid"),
-  track: document.getElementById("track"),
   email: document.getElementById("email"),
+  track: document.getElementById("track"),
+  trackBlock: document.getElementById("trackBlock"),
+  trackLock: document.getElementById("trackLock"),
+  trackFixed: document.getElementById("trackFixed"),
+  saveTrackBtn: document.getElementById("saveTrackBtn"),
   cancelSid: document.getElementById("cancelSid"),
   cancelCode: document.getElementById("cancelCode"),
   cancelBtn: document.getElementById("cancelBtn"),
@@ -238,88 +260,33 @@ const els = {
   importJson: document.getElementById("importJson"),
 };
 
-function uid(len=4){
-  const s = Math.random().toString(36).slice(2).toUpperCase();
-  const s2 = Math.random().toString(36).slice(2).toUpperCase();
-  return `${s.slice(0,len)}-${s2.slice(0,len)}`;
+/* ===== Backend helpers ===== */
+async function apiGet(params){
+  const url = new URL(CONFIG.API_BASE);
+  Object.entries(Object.assign({}, params, { key: CONFIG.API_KEY })).forEach(([k,v])=>url.searchParams.set(k,v));
+  const res = await fetch(url.toString()); return res.json();
+}
+async function apiPost(formParams){
+  const body = new URLSearchParams(Object.assign({}, formParams, { apiKey: CONFIG.API_KEY }));
+  const res = await fetch(CONFIG.API_BASE, { method:"POST", body }); return res.json();
 }
 
-function lessonById(id){ return CONFIG.lessons.find(l=>l.id===id); }
-
-// Hash util for admin code check
-async function sha256Hex(str){
-  const enc = new TextEncoder().encode(str);
-  const buf = await crypto.subtle.digest("SHA-256", enc);
-  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("").toUpperCase();
-}
-
-/* ======================
-   API helpers (Sheets)
-====================== */
+/* ===== Availability (server + local) ===== */
+let _pendingAvail = null;
 async function fetchCounts(){
-  if(!CONFIG.API_BASE) return {}; // skip if not set
-  try{
-    const res = await fetch(CONFIG.API_BASE + "?op=counts", {
-      method:"GET",
-      headers: { "X-Api-Key": CONFIG.API_KEY }
-    });
-    const data = await res.json();
-    return data.counts || {};
-  }catch(e){
-    console.warn("Kon server counts niet ophalen:", e);
-    return {};
-  }
+  try{ const data = await apiGet({ op:"counts" }); return data.counts || {}; } catch(e){ return {}; }
 }
-
-async function syncAddToSheet(row){
-  if(!CONFIG.API_BASE) return;
-  try{
-    await fetch(CONFIG.API_BASE, {
-      method: "POST",
-      headers: { "Content-Type":"application/json", "X-Api-Key": CONFIG.API_KEY },
-      body: JSON.stringify({
-        op: "add",
-        lessonId: row.lessonId,
-        lessonName: lessonById(row.lessonId)?.name || "",
-        track: row.track,
-        name: row.name,
-        sid: row.sid,
-        email: row.email || "",
-        code: row.code,
-        timestamp: new Date(row.ts).toISOString()
-      })
-    });
-  }catch(e){
-    console.warn("Sync naar Sheet faalde:", e);
-  }
+function renderAvailabilityThrottled(){
+  if(_pendingAvail) return;
+  _pendingAvail = setTimeout(async ()=>{ _pendingAvail=null; const c = await getEffectiveCounts(); drawAvailability(c); }, 800);
 }
-
-async function syncCancelInSheet(sid, code){
-  if(!CONFIG.API_BASE) return;
-  try{
-    await fetch(CONFIG.API_BASE, {
-      method: "POST",
-      headers: { "Content-Type":"application/json", "X-Api-Key": CONFIG.API_KEY },
-      body: JSON.stringify({ op:"cancel", sid, code })
-    });
-  }catch(e){
-    console.warn("Cancel sync naar Sheet faalde:", e);
-  }
-}
-
-/* ======================
-   Counts helpers (UI)
-====================== */
 async function getEffectiveCounts(){
-  // combineer lokale counts met server counts (server is leidend als beschikbaar)
   const localC = {}; CONFIG.lessons.forEach(l => localC[l.id]=0);
   loadBookings().forEach(b => { if(localC[b.lessonId]!=null) localC[b.lessonId]++; });
   const serverC = await fetchCounts();
-  return Object.assign(localC, serverC); // server overschrijft lokale
+  return Object.assign(localC, serverC);
 }
-
-async function renderAvailability(){
-  const c = await getEffectiveCounts();
+function drawAvailability(c){
   els.availability.innerHTML = "";
   CONFIG.lessons.forEach(l=>{
     const used = c[l.id]||0, left = l.capacity - used;
@@ -332,7 +299,7 @@ async function renderAvailability(){
     els.availability.appendChild(box);
   });
 }
-
+async function renderAvailability(){ const c = await getEffectiveCounts(); drawAvailability(c); }
 function renderLessonOptions(){
   els.lessonSel.innerHTML = `<option value="">Kies een proeflesmoment…</option>`;
   const select = els.lessonSel;
@@ -350,14 +317,140 @@ function renderLessonOptions(){
   });
 }
 
-/* ======================
-   Admin / dashboard
-====================== */
+/* ===== Profiel state ===== */
+let currentProfile = null; // {sid, name, email, track}
+async function lookupSidUI(){
+  const sid = normSid(els.sid.value);
+  if(!sid) return;
+  try{
+    const data = await apiGet({ op:"lookupSid", sid });
+    if(data.ok){
+      currentProfile = data.profile || null;
+      setTrackUI(currentProfile);
+      if (data.activeCount >= CONFIG.MAX_BOOKINGS_PER_SID) {
+        msg(`Je hebt het maximum van ${CONFIG.MAX_BOOKINGS_PER_SID} boekingen bereikt. Annuleer eerst één boeking.`, true);
+      }
+    }
+  }catch(e){ /* ignore */ }
+}
+function setTrackUI(profile){
+  if(profile && profile.track){
+    els.trackBlock.style.display = "none";
+    els.trackLock.style.display = "block";
+    els.trackFixed.value = profile.track;
+    if(profile.email && !els.email.value) els.email.value = profile.email;
+    if(profile.name && !els.name.value) els.name.value = profile.name;
+  }else{
+    els.trackBlock.style.display = "block";
+    els.trackLock.style.display = "none";
+    els.track.value = "";
+  }
+}
+
+/* ===== Acties ===== */
+function msg(text, isErr=false){ els.bookMsg.innerHTML = text; els.bookMsg.style.color = isErr ? '#fca5a5' : '#a7f3d0'; }
+
+async function saveTrackOnce(){
+  const sid = normSid(els.sid.value);
+  const name = els.name.value.trim();
+  const email = (els.email?.value || "").trim();
+  const track = els.track.value;
+
+  if(!sid || sid.length<5) return msg("Vul eerst een geldig studentnummer in (min. 5 cijfers).", true);
+  if(!name) return msg("Vul je naam in om je track op te slaan.", true);
+  if(!email || !isValidEmail(email)) return msg("Vul een geldige e-mail in.", true);
+  if(!track) return msg("Kies een track.", true);
+
+  const resp = await apiPost({ op:"profile", sid, name, email, track });
+  if(!resp.ok){
+    if(resp.error === "exists"){
+      msg("Je track stond al vast. Ga verder met boeken.", false);
+      currentProfile = resp.profile || { sid, name, email, track };
+    } else {
+      return msg("Kon track niet opslaan: "+(resp.error||"onbekend"), true);
+    }
+  }else{
+    currentProfile = resp.profile;
+  }
+  setTrackUI(currentProfile);
+  msg("Je track is opgeslagen. Je kunt nu boeken.");
+}
+
+async function book(){
+  const name = els.name.value.trim();
+  const sid = normSid(els.sid.value);
+  const email = (els.email?.value || "").trim();
+  const lessonId = els.lessonSel.value;
+
+  if(!name || !sid || !lessonId) return msg("Vul naam, studentnummer en les in.", true);
+  if(sid.length < 5) return msg("Studentnummer moet uit minimaal 5 cijfers bestaan.", true);
+  if(!email || !isValidEmail(email)) return msg("Vul een geldige e-mail in.", true);
+
+  if(!currentProfile || !currentProfile.track){
+    return msg("Leg eerst je track vast (éénmalig) en probeer daarna te boeken.", true);
+  }
+
+  const counts = await getEffectiveCounts();
+  const l = lessonById(lessonId);
+  if((counts[lessonId]||0) >= l.capacity) return msg("Dit lesmoment is VOL.", true);
+
+  const code = uid(4);
+  const resp = await apiPost({
+    op:"add",
+    lessonId,
+    lessonName: l.name,
+    name, sid, email,
+    track: currentProfile.track,
+    code,
+    timestamp: new Date().toISOString()
+  });
+  if(!resp.ok){
+    if(resp.error === "limit_reached"){
+      return msg(`Je hebt het maximum van ${CONFIG.MAX_BOOKINGS_PER_SID} boekingen bereikt.`, true);
+    }
+    return msg("Boeken mislukt: "+(resp.error||"onbekend"), true);
+  }
+
+  const all = loadBookings();
+  all.push({ name, sid, track: currentProfile.track, email, lessonId, code, ts: Date.now() });
+  saveBookings(all);
+  renderAvailabilityThrottled();
+  refreshAdmin();
+
+  msg(`Ingeschreven! Jouw annuleercode: <span class="code">${code}</span> (bewaar deze)`);
+  els.lessonSel.value = "";
+}
+
+async function cancelOwn(){
+  const sid = normSid(els.cancelSid.value);
+  const code = els.cancelCode.value.trim().toUpperCase();
+  if(!sid || !code){ alert("Vul studentnummer en code in."); return; }
+
+  const resp = await apiPost({ op:"cancel", sid, code });
+  if(!resp.ok){ alert("Annuleren in Google Sheet mislukte. Probeer opnieuw."); return; }
+
+  let all = loadBookings();
+  all = all.filter(b => !(normSid(b.sid)===sid && String(b.code||'').trim().toUpperCase()===code));
+  saveBookings(all);
+
+  renderAvailabilityThrottled();
+  refreshAdmin();
+  alert("Je boeking is geannuleerd.");
+  els.cancelSid.value=""; els.cancelCode.value="";
+}
+
+/* ===== Admin ===== */
+async function adminLogin(){
+  const entered = els.adminCode.value;
+  const ok = (await sha256Hex(entered)) === CONFIG.ADMIN_CODE_HASH;
+  if(ok){ els.adminArea.style.display = "block"; refreshAdmin(); }
+  else { alert("Onjuiste admin-code."); }
+}
 function refreshAdmin(){
   const list = loadBookings();
   els.adminStats.innerHTML = "";
   CONFIG.lessons.forEach(l=>{
-    const used = list.filter(b=>b.lessonId===l.id).length; // lokale view
+    const used = list.filter(b=>b.lessonId===l.id).length;
     const div = document.createElement("div");
     div.innerHTML = `<div class="flex"><span class="badge ${l.track}">${l.track}</span>
       <strong>${l.name}</strong> <span class="muted">— ${used}/${l.capacity} (lokaal)</span></div>`;
@@ -371,7 +464,7 @@ function refreshAdmin(){
       <td>${l?l.name:'(verwijderd)'}</td>
       <td>${b.name}</td>
       <td>${b.sid}</td>
-      <td>${b.track}</td>
+      <td>${b.track||''}</td>
       <td>${b.email||''}</td>
       <td><span class="code">${b.code}</span></td>
       <td class="right"><button class="btn danger" data-del="${idx}">Verwijder</button></td>
@@ -379,104 +472,27 @@ function refreshAdmin(){
     els.adminTableBody.appendChild(tr);
   });
 }
-
-/* ======================
-   Booking actions
-====================== */
-async function book(){
-  const name = els.name.value.trim();
-  const sid = els.sid.value.trim();
-  const track = els.track.value;
-  const email = els.email.value.trim();
-  const lessonId = els.lessonSel.value;
-
-  // basic validation
-  if(!name || !sid || !lessonId || !track){
-    return msg("Vul naam, studentnummer, track en les in.", true);
-  }
-  if(!/^\d{5,}$/.test(sid)) return msg("Studentnummer moet uit cijfers bestaan (min. 5).", true);
-
-  const l = lessonById(lessonId);
-  const all = loadBookings();
-  const already = all.find(b=> b.sid===sid && b.lessonId===lessonId);
-  if(already) return msg("Je staat al ingeschreven voor dit lesmoment.", true);
-
-  // server capacity check (leidend als beschikbaar)
-  const serverCounts = await fetchCounts();
-  const usedServer = serverCounts[lessonId] || 0;
-  if(usedServer >= l.capacity) return msg("Dit lesmoment is VOL (server). Kies een andere.", true);
-
-  // local capacity check (fallback)
-  const usedLocal = all.filter(b=> b.lessonId===lessonId).length;
-  if(usedLocal + usedServer >= l.capacity) return msg("Dit lesmoment is VOL (lokaal). Kies een andere.", true);
-
-  const code = uid(4);
-  const row = { name, sid, track, email, lessonId, code, ts: Date.now() };
-  all.push(row); saveBookings(all);
-  await syncAddToSheet(row);
-  await renderAvailability(); refreshAdmin();
-  msg(`Ingeschreven! Jouw annuleercode: <span class="code">${code}</span> (bewaar deze)`);
-  els.lessonSel.value = "";
-}
-
-function msg(html, isErr=false){
-  els.bookMsg.innerHTML = html;
-  els.bookMsg.style.color = isErr ? "#fca5a5" : "#86efac";
-  setTimeout(()=> els.bookMsg.innerHTML="", 8000);
-}
-
-async function cancelOwn(){
-  const sid = els.cancelSid.value.trim();
-  const code = els.cancelCode.value.trim().toUpperCase();
-  if(!sid || !code) return;
-  let all = loadBookings();
-  const before = all.length;
-  all = all.filter(b => !(b.sid===sid && b.code.toUpperCase()===code));
-  if(all.length===before){ alert("Niet gevonden. Controleer studentnummer en code."); return; }
-  saveBookings(all);
-  await syncCancelInSheet(sid, code);
-  await renderAvailability(); refreshAdmin();
-  alert("Je boeking is geannuleerd.");
-  els.cancelSid.value=""; els.cancelCode.value="";
-}
-
-/* ======================
-   Admin actions
-====================== */
-async function adminLogin(){
-  const entered = els.adminCode.value;
-  const ok = (await sha256Hex(entered)) === CONFIG.ADMIN_CODE_HASH;
-  if(ok){
-    els.adminArea.style.display = "block";
-    refreshAdmin();
-  }else{
-    alert("Onjuiste admin-code.");
-  }
-}
-
-document.addEventListener("click", (e)=>{
+document.addEventListener("click", async (e)=>{
   const delIdx = e.target.getAttribute && e.target.getAttribute("data-del");
   if(delIdx!=null){
     const all = loadBookings();
     const row = all[Number(delIdx)];
-    if(confirm(`Verwijderen:\n${row.name} (${row.sid})\n${lessonById(row.lessonId)?.name || ''}?`)){
-      all.splice(Number(delIdx),1); saveBookings(all);
-      refreshAdmin(); renderAvailability();
-    }
+    const lesNaam = lessonById(row.lessonId)?.name || '';
+    if(!confirm(`Verwijderen:\n${row.name} (${row.sid})\n${lesNaam}?`)) return;
+    const okResp = await apiPost({ op:"cancel", sid: row.sid, code: row.code });
+    if(!okResp.ok){ alert("Annuleren in Google Sheet mislukte (rij blijft staan). Probeer opnieuw."); return; }
+    all.splice(Number(delIdx),1); saveBookings(all);
+    refreshAdmin(); renderAvailabilityThrottled();
   }
 });
 
-/* ======================
-   Export / Import
-====================== */
+/* ===== Export/Import ===== */
 function toCSV(rows){
   const header = ["lessonId","lessonName","track","name","sid","email","code","timestamp"];
   const csv = [header.join(",")].concat(rows.map(r=>{
     const l = lessonById(r.lessonId);
-    const esc = s => `\"${String(s||"").replace(/\"/g,'\"\"')}\"`;
-    return [
-      r.lessonId, l?l.name:"", r.track, r.name, r.sid, r.email||"", r.code, new Date(r.ts).toISOString()
-    ].map(esc).join(",");
+    const esc = s => `"${String(s||"").replace(/"/g,'""')}"`;
+    return [ r.lessonId, l?l.name:"", r.track||"", r.name, r.sid, r.email||"", r.code, new Date(r.ts).toISOString() ].map(esc).join(",");
   })).join("\n");
   return csv;
 }
@@ -485,34 +501,34 @@ function download(filename, content, type="text/plain"){
   a.href = URL.createObjectURL(new Blob([content], {type}));
   a.download = filename; a.click();
 }
-els.exportCsv.addEventListener("click", ()=>{
-  download("proefstuderen.csv", toCSV(loadBookings()), "text/csv");
-});
-els.exportJson.addEventListener("click", ()=>{
-  download("proefstuderen.json", JSON.stringify(loadBookings(), null, 2), "application/json");
-});
-els.importJson.addEventListener("change", async (e)=>{
+document.getElementById("exportCsv").addEventListener("click", ()=>{ download("proefstuderen.csv", toCSV(loadBookings()), "text/csv"); });
+document.getElementById("exportJson").addEventListener("click", ()=>{ download("proefstuderen.json", JSON.stringify(loadBookings(), null, 2), "application/json"); });
+document.getElementById("importJson").addEventListener("change", async (e)=>{
   const file = e.target.files[0]; if(!file) return;
   const text = await file.text();
   let rows = []; try{ rows = JSON.parse(text); }catch(err){ alert("Geen geldige JSON."); return; }
   if(!Array.isArray(rows)) return alert("JSON verwacht een lijst.");
-  // Merge (op key sid+code)
   const existing = loadBookings();
-  const key = r => `${r.sid}|${r.code}`;
+  const key = r => `${normSid(r.sid)}|${String(r.code||'').toUpperCase()}`;
   const map = new Map(existing.map(r=>[key(r), r]));
   rows.forEach(r=> map.set(key(r), r));
   const merged = Array.from(map.values());
-  saveBookings(merged); refreshAdmin(); renderAvailability();
+  saveBookings(merged); refreshAdmin(); renderAvailabilityThrottled();
   alert("Import voltooid.");
 });
 
-/* ======================
-   Wire up
-====================== */
-els.bookBtn.addEventListener("click", book);
-els.cancelBtn.addEventListener("click", cancelOwn);
-els.loginBtn.addEventListener("click", adminLogin);
-renderLessonOptions(); renderAvailability();
+/* ===== Wire-up & init ===== */
+document.getElementById("saveTrackBtn").addEventListener("click", saveTrackOnce);
+document.getElementById("sid").addEventListener("blur", lookupSidUI);
+document.getElementById("bookBtn").addEventListener("click", book);
+document.getElementById("cancelBtn").addEventListener("click", cancelOwn);
+document.getElementById("loginBtn").addEventListener("click", adminLogin);
+
+function init(){
+  renderLessonOptions();
+  renderAvailability();
+}
+init();
 </script>
 </body>
 </html>
