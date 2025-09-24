@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Proefstuderen – Inschrijven & Dashboard</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#111827; --muted:#94a3b8; --primary:#22c55e; --danger:#ef4444; --accent:#38bdf8;
+    --text:#e5e7eb; --soft:#1f2937; --ring:#334155;
+  }
+  *{box-sizing:border-box} body{
+    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;
+    background:linear-gradient(180deg,#0b1220 0%, #0f172a 100%); color:var(--text);
+  }
+  header{padding:20px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    position:sticky; top:0; background:rgba(15,23,42,.8); backdrop-filter:saturate(180%) blur(10px); border-bottom:1px solid #1f2937}
+  h1{font-size:18px; margin:0}
+  .pill{font-size:12px; color:#a5b4fc; background:#111827; padding:6px 10px; border:1px solid #1f2937; border-radius:999px}
+  main{max-width:1100px; margin:24px auto; padding:0 16px; display:grid; grid-template-columns:1.1fr .9fr; gap:20px}
+  .card{background:var(--card); border:1px solid var(--soft); border-radius:16px; padding:18px}
+  .card h2{margin:0 0 12px 0; font-size:18px}
+  label{display:block; font-size:14px; color:var(--muted); margin:10px 0 6px}
+  input,select,textarea{
+    width:100%; background:#0b1220; border:1px solid var(--ring); color:var(--text);
+    padding:10px 12px; border-radius:10px; outline:none; font-size:14px;
+  }
+  input:focus,select:focus,textarea:focus{border-color:#60a5fa; box-shadow:0 0 0 3px rgba(96,165,250,.15)}
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px; border-radius:10px;
+    border:1px solid #1f2937; cursor:pointer; user-select:none; font-weight:600; transition:transform .02s ease}
+  .btn:active{transform:translateY(1px)}
+  .primary{background:var(--primary); color:#062a12; border-color:#16a34a}
+  .ghost{background:#0b1220}
+  .danger{background:var(--danger); border-color:#b91c1c}
+  .accent{background:var(--accent); color:#062a12; border-color:#0891b2}
+  small{color:var(--muted)}
+  .grid{display:grid; gap:8px}
+  .lessons{display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:8px}
+  .lesson{background:#0b1220; border:1px solid var(--ring); border-radius:10px; padding:10px}
+  .lesson h4{margin:0 0 6px 0; font-size:14px}
+  .cap{font-size:12px; color:#a3e635}
+  .full{color:#fca5a5}
+  .badge{display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; border:1px solid #1f2937}
+  .CVD{background:#0a1f1a; color:#86efac; border-color:#14532d}
+  .DBI{background:#0a1a21; color:#7dd3fc; border-color:#0e7490}
+  .muted{opacity:.75}
+  table{width:100%; border-collapse:collapse; margin-top:10px; font-size:13px}
+  th,td{border-bottom:1px solid #1f2937; padding:8px 6px; text-align:left}
+  th{color:#a5b4fc; position:sticky; top:0; background:#0f172a}
+  .right{text-align:right}
+  .kicker{font-size:12px; color:#93c5fd}
+  .flex{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+  .code{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,"Liberation Mono","Courier New",monospace; background:#0b1220; border:1px dashed #334155; padding:8px 10px; border-radius:8px}
+  .footer{margin:24px auto; max-width:1100px; padding:0 16px 40px; color:#94a3b8; font-size:12px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Proefstuderen – Inschrijven</h1>
+  <span class="pill">Week 6 · OP1 · CVD & DBI</span>
+</header>
+
+<main>
+  <!-- INSCHRIJVEN -->
+  <section class="card">
+    <h2>Boeking maken</h2>
+    <div class="row">
+      <div>
+        <label>Voor- en achternaam</label>
+        <input id="name" placeholder="Bijv. Sam Student" />
+      </div>
+      <div>
+        <label>Studentnummer</label>
+        <input id="sid" placeholder="Bijv. 1234567" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Track (meest interessant)</label>
+        <select id="track">
+          <option value="">Kies…</option>
+          <option>Creating Value for Data (CVD)</option>
+          <option>Digital Business Innovation (DBI)</option>
+          <option>Cybersecurity (interesse)</option>
+        </select>
+      </div>
+      <div>
+        <label>E-mail (voor bevestiging/annuleren, optioneel)</label>
+        <input id="email" placeholder="naam@hr.nl" />
+      </div>
+    </div>
+
+    <label>Proeflesmoment</label>
+    <select id="lesson"></select>
+    <small class="muted">Capaciteit: CVD max. 4 per les · DBI max. 16 per les</small>
+
+    <div class="flex" style="margin-top:12px">
+      <button class="btn primary" id="bookBtn">Boek plek</button>
+      <span id="bookMsg"></span>
+    </div>
+
+    <hr style="border:none;border-top:1px solid #1f2937; margin:16px 0" />
+
+    <h2>Zelf annuleren</h2>
+    <div class="row">
+      <div>
+        <label>Studentnummer</label>
+        <input id="cancelSid" placeholder="1234567" />
+      </div>
+      <div>
+        <label>Boekingscode</label>
+        <input id="cancelCode" placeholder="bijv. X7F2-9PKD" />
+      </div>
+    </div>
+    <div class="flex" style="margin-top:12px">
+      <button class="btn danger" id="cancelBtn">Annuleer mijn boeking</button>
+      <small class="muted">Code staat in je bevestiging (getoond na boeken).</small>
+    </div>
+
+    <div class="card" style="margin-top:16px; background:#0b1220">
+      <div class="kicker">Beschikbaarheid (live)</div>
+      <div id="availability" class="lessons"></div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="card">
+    <h2>Dashboard (coördinator)</h2>
+    <div class="row">
+      <div>
+        <label>Admin-code</label>
+        <input id="adminCode" type="password" placeholder="•••••••" />
+      </div>
+      <div class="flex" style="margin-top:28px">
+        <button class="btn ghost" id="loginBtn">Ontgrendel</button>
+        <small class="muted">Voer de beheerdercode in om te ontgrendelen.</small>
+      </div>
+    </div>
+
+    <div id="adminArea" style="display:none">
+      <div class="flex" style="margin:10px 0 4px">
+        <button class="btn accent" id="exportCsv">Export CSV</button>
+        <button class="btn ghost" id="exportJson">Export JSON</button>
+        <label class="btn ghost">
+          Import JSON <input type="file" id="importJson" accept="application/json" style="display:none">
+        </label>
+      </div>
+
+      <div class="grid" id="adminStats"></div>
+
+      <table id="adminTable">
+        <thead>
+          <tr>
+            <th>Les</th><th>Naam</th><th>Studentnr</th><th>Track</th><th>E-mail</th><th>Code</th><th class="right">Actie</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<div class="footer">
+  <p><strong>Info CVD (OP1):</strong> Ma: Statistiek 9–13 (KZ.B2.311 / KZ.D3.140) · Data Eng. 9–13 (KZ.C1.280) · Data Eng. 13–17 (KZ.B2.311). Wo: Statistiek 9–13 (KZ.D5.220 / KZ.C1.280) · Data Eng. 13:30–17:30 (KZ.C1.280) · Data Eng. 14–18 (KZ.D6.175).</p>
+  <p><strong>Info DBI (OP1):</strong> Ma: Digitale Transformatie & Design Thinking (+ Onderzoeksvaardigheden) 9–14 (KZ.C0.150). Wo: Statistiek & AI 9–13 (KZ.C0.150). Vr: Projectmanagement & Feedback 9–14 (KZ.C0.150).</p>
+</div>
+
+<script>
+/* =======================
+   CONFIG – pas hier aan
+======================= */
+const CONFIG = {
+  // Admin-code is verborgen als SHA-256 hash van @Ladygeek2025
+  ADMIN_CODE_HASH: "DEA4703805DC17616E36355E4F6D86699323655ED9B6168C1F5A3DE2D7CEC932",
+  // API koppeling (Google Apps Script Web App)
+  API_BASE: "", // zet hier later je /exec URL
+  API_KEY:  "", // en hier je API key
+  lessons: [
+    // CVD (max 4)
+    { id:"CVD-MA-STAT-1", track:"CVD", name:"CVD · Ma · Statistiek 09:00–13:00 (KZ.B2.311)", capacity:4 },
+    { id:"CVD-MA-STAT-2", track:"CVD", name:"CVD · Ma · Statistiek 09:00–13:00 (KZ.D3.140)", capacity:4 },
+    { id:"CVD-MA-DE-1",   track:"CVD", name:"CVD · Ma · Data Engineering 09:00–13:00 (KZ.C1.280)", capacity:4 },
+    { id:"CVD-MA-DE-2",   track:"CVD", name:"CVD · Ma · Data Engineering 13:00–17:00 (KZ.B2.311)", capacity:4 },
+    { id:"CVD-WO-STAT-1", track:"CVD", name:"CVD · Wo · Statistiek 09:00–13:00 (KZ.D5.220)", capacity:4 },
+    { id:"CVD-WO-STAT-2", track:"CVD", name:"CVD · Wo · Statistiek 09:00–13:00 (KZ.C1.280)", capacity:4 },
+    { id:"CVD-WO-DE-1",   track:"CVD", name:"CVD · Wo · Data Engineering 13:30–17:30 (KZ.C1.280)", capacity:4 },
+    { id:"CVD-WO-DE-2",   track:"CVD", name:"CVD · Wo · Data Engineering 14:00–18:00 (KZ.D6.175)", capacity:4 },
+
+    // DBI (max 16)
+    { id:"DBI-MA-DTDT",   track:"DBI", name:"DBI · Ma · Digitale Transformatie & Design Thinking (+ Onderzoeksvaardigheden) 09:00–14:00 (KZ.C0.150)", capacity:16 },
+    { id:"DBI-WO-SAI",    track:"DBI", name:"DBI · Wo · Statistiek & AI 09:00–13:00 (KZ.C0.150)", capacity:16 },
+    { id:"DBI-VR-PMF",    track:"DBI", name:"DBI · Vr · Projectmanagement & Feedback 09:00–14:00 (KZ.C0.150)", capacity:16 },
+  ],
+};
+
+const STORAGE_KEY = "proefstuderen.bookings.v3";
+
+/* ================
+   Storage helpers
+================ */
+function loadBookings(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+  catch(e){ return []; }
+}
+function saveBookings(rows){ localStorage.setItem(STORAGE_KEY, JSON.stringify(rows)); }
+
+/* ======================
+   DOM refs & utilities
+====================== */
+const els = {
+  lessonSel: document.getElementById("lesson"),
+  availability: document.getElementById("availability"),
+  bookBtn: document.getElementById("bookBtn"),
+  bookMsg: document.getElementById("bookMsg"),
+  name: document.getElementById("name"),
+  sid: document.getElementById("sid"),
+  track: document.getElementById("track"),
+  email: document.getElementById("email"),
+  cancelSid: document.getElementById("cancelSid"),
+  cancelCode: document.getElementById("cancelCode"),
+  cancelBtn: document.getElementById("cancelBtn"),
+  adminCode: document.getElementById("adminCode"),
+  loginBtn: document.getElementById("loginBtn"),
+  adminArea: document.getElementById("adminArea"),
+  adminTableBody: document.querySelector("#adminTable tbody"),
+  adminStats: document.getElementById("adminStats"),
+  exportCsv: document.getElementById("exportCsv"),
+  exportJson: document.getElementById("exportJson"),
+  importJson: document.getElementById("importJson"),
+};
+
+function uid(len=4){
+  const s = Math.random().toString(36).slice(2).toUpperCase();
+  const s2 = Math.random().toString(36).slice(2).toUpperCase();
+  return `${s.slice(0,len)}-${s2.slice(0,len)}`;
+}
+
+function lessonById(id){ return CONFIG.lessons.find(l=>l.id===id); }
+
+// Hash util for admin code check
+async function sha256Hex(str){
+  const enc = new TextEncoder().encode(str);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("").toUpperCase();
+}
+
+/* ======================
+   API helpers (Sheets)
+====================== */
+async function fetchCounts(){
+  if(!CONFIG.API_BASE) return {}; // skip if not set
+  try{
+    const res = await fetch(CONFIG.API_BASE + "?op=counts", {
+      method:"GET",
+      headers: { "X-Api-Key": CONFIG.API_KEY }
+    });
+    const data = await res.json();
+    return data.counts || {};
+  }catch(e){
+    console.warn("Kon server counts niet ophalen:", e);
+    return {};
+  }
+}
+
+async function syncAddToSheet(row){
+  if(!CONFIG.API_BASE) return;
+  try{
+    await fetch(CONFIG.API_BASE, {
+      method: "POST",
+      headers: { "Content-Type":"application/json", "X-Api-Key": CONFIG.API_KEY },
+      body: JSON.stringify({
+        op: "add",
+        lessonId: row.lessonId,
+        lessonName: lessonById(row.lessonId)?.name || "",
+        track: row.track,
+        name: row.name,
+        sid: row.sid,
+        email: row.email || "",
+        code: row.code,
+        timestamp: new Date(row.ts).toISOString()
+      })
+    });
+  }catch(e){
+    console.warn("Sync naar Sheet faalde:", e);
+  }
+}
+
+async function syncCancelInSheet(sid, code){
+  if(!CONFIG.API_BASE) return;
+  try{
+    await fetch(CONFIG.API_BASE, {
+      method: "POST",
+      headers: { "Content-Type":"application/json", "X-Api-Key": CONFIG.API_KEY },
+      body: JSON.stringify({ op:"cancel", sid, code })
+    });
+  }catch(e){
+    console.warn("Cancel sync naar Sheet faalde:", e);
+  }
+}
+
+/* ======================
+   Counts helpers (UI)
+====================== */
+async function getEffectiveCounts(){
+  // combineer lokale counts met server counts (server is leidend als beschikbaar)
+  const localC = {}; CONFIG.lessons.forEach(l => localC[l.id]=0);
+  loadBookings().forEach(b => { if(localC[b.lessonId]!=null) localC[b.lessonId]++; });
+  const serverC = await fetchCounts();
+  return Object.assign(localC, serverC); // server overschrijft lokale
+}
+
+async function renderAvailability(){
+  const c = await getEffectiveCounts();
+  els.availability.innerHTML = "";
+  CONFIG.lessons.forEach(l=>{
+    const used = c[l.id]||0, left = l.capacity - used;
+    const box = document.createElement("div");
+    box.className = "lesson";
+    box.innerHTML = `
+      <h4><span class="badge ${l.track}">${l.track}</span> ${l.name.replace(/^CVD · |DBI · /,'')}</h4>
+      <div><span class="cap">${used}/${l.capacity}</span> bezet · <span class="${left>0?'':'full'}">${left>0? left+' vrij':'VOL'}</span></div>
+    `;
+    els.availability.appendChild(box);
+  });
+}
+
+function renderLessonOptions(){
+  els.lessonSel.innerHTML = `<option value="">Kies een proeflesmoment…</option>`;
+  const select = els.lessonSel;
+  const grouped = { CVD:[], DBI:[] };
+  CONFIG.lessons.forEach(l => grouped[l.track].push(l));
+  ["CVD","DBI"].forEach(track => {
+    const og = document.createElement("optgroup");
+    og.label = track === "CVD" ? "CVD – Creating Value for Data" : "DBI – Digital Business Innovation";
+    grouped[track].forEach(l => {
+      const opt = document.createElement("option");
+      opt.value = l.id; opt.textContent = l.name;
+      og.appendChild(opt);
+    });
+    select.appendChild(og);
+  });
+}
+
+/* ======================
+   Admin / dashboard
+====================== */
+function refreshAdmin(){
+  const list = loadBookings();
+  els.adminStats.innerHTML = "";
+  CONFIG.lessons.forEach(l=>{
+    const used = list.filter(b=>b.lessonId===l.id).length; // lokale view
+    const div = document.createElement("div");
+    div.innerHTML = `<div class="flex"><span class="badge ${l.track}">${l.track}</span>
+      <strong>${l.name}</strong> <span class="muted">— ${used}/${l.capacity} (lokaal)</span></div>`;
+    els.adminStats.appendChild(div);
+  });
+  els.adminTableBody.innerHTML = "";
+  list.forEach((b,idx)=>{
+    const l = lessonById(b.lessonId);
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${l?l.name:'(verwijderd)'}</td>
+      <td>${b.name}</td>
+      <td>${b.sid}</td>
+      <td>${b.track}</td>
+      <td>${b.email||''}</td>
+      <td><span class="code">${b.code}</span></td>
+      <td class="right"><button class="btn danger" data-del="${idx}">Verwijder</button></td>
+    `;
+    els.adminTableBody.appendChild(tr);
+  });
+}
+
+/* ======================
+   Booking actions
+====================== */
+async function book(){
+  const name = els.name.value.trim();
+  const sid = els.sid.value.trim();
+  const track = els.track.value;
+  const email = els.email.value.trim();
+  const lessonId = els.lessonSel.value;
+
+  // basic validation
+  if(!name || !sid || !lessonId || !track){
+    return msg("Vul naam, studentnummer, track en les in.", true);
+  }
+  if(!/^\d{5,}$/.test(sid)) return msg("Studentnummer moet uit cijfers bestaan (min. 5).", true);
+
+  const l = lessonById(lessonId);
+  const all = loadBookings();
+  const already = all.find(b=> b.sid===sid && b.lessonId===lessonId);
+  if(already) return msg("Je staat al ingeschreven voor dit lesmoment.", true);
+
+  // server capacity check (leidend als beschikbaar)
+  const serverCounts = await fetchCounts();
+  const usedServer = serverCounts[lessonId] || 0;
+  if(usedServer >= l.capacity) return msg("Dit lesmoment is VOL (server). Kies een andere.", true);
+
+  // local capacity check (fallback)
+  const usedLocal = all.filter(b=> b.lessonId===lessonId).length;
+  if(usedLocal + usedServer >= l.capacity) return msg("Dit lesmoment is VOL (lokaal). Kies een andere.", true);
+
+  const code = uid(4);
+  const row = { name, sid, track, email, lessonId, code, ts: Date.now() };
+  all.push(row); saveBookings(all);
+  await syncAddToSheet(row);
+  await renderAvailability(); refreshAdmin();
+  msg(`Ingeschreven! Jouw annuleercode: <span class="code">${code}</span> (bewaar deze)`);
+  els.lessonSel.value = "";
+}
+
+function msg(html, isErr=false){
+  els.bookMsg.innerHTML = html;
+  els.bookMsg.style.color = isErr ? "#fca5a5" : "#86efac";
+  setTimeout(()=> els.bookMsg.innerHTML="", 8000);
+}
+
+async function cancelOwn(){
+  const sid = els.cancelSid.value.trim();
+  const code = els.cancelCode.value.trim().toUpperCase();
+  if(!sid || !code) return;
+  let all = loadBookings();
+  const before = all.length;
+  all = all.filter(b => !(b.sid===sid && b.code.toUpperCase()===code));
+  if(all.length===before){ alert("Niet gevonden. Controleer studentnummer en code."); return; }
+  saveBookings(all);
+  await syncCancelInSheet(sid, code);
+  await renderAvailability(); refreshAdmin();
+  alert("Je boeking is geannuleerd.");
+  els.cancelSid.value=""; els.cancelCode.value="";
+}
+
+/* ======================
+   Admin actions
+====================== */
+async function adminLogin(){
+  const entered = els.adminCode.value;
+  const ok = (await sha256Hex(entered)) === CONFIG.ADMIN_CODE_HASH;
+  if(ok){
+    els.adminArea.style.display = "block";
+    refreshAdmin();
+  }else{
+    alert("Onjuiste admin-code.");
+  }
+}
+
+document.addEventListener("click", (e)=>{
+  const delIdx = e.target.getAttribute && e.target.getAttribute("data-del");
+  if(delIdx!=null){
+    const all = loadBookings();
+    const row = all[Number(delIdx)];
+    if(confirm(`Verwijderen:\n${row.name} (${row.sid})\n${lessonById(row.lessonId)?.name || ''}?`)){
+      all.splice(Number(delIdx),1); saveBookings(all);
+      refreshAdmin(); renderAvailability();
+    }
+  }
+});
+
+/* ======================
+   Export / Import
+====================== */
+function toCSV(rows){
+  const header = ["lessonId","lessonName","track","name","sid","email","code","timestamp"];
+  const csv = [header.join(",")].concat(rows.map(r=>{
+    const l = lessonById(r.lessonId);
+    const esc = s => `\"${String(s||"").replace(/\"/g,'\"\"')}\"`;
+    return [
+      r.lessonId, l?l.name:"", r.track, r.name, r.sid, r.email||"", r.code, new Date(r.ts).toISOString()
+    ].map(esc).join(",");
+  })).join("\n");
+  return csv;
+}
+function download(filename, content, type="text/plain"){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([content], {type}));
+  a.download = filename; a.click();
+}
+els.exportCsv.addEventListener("click", ()=>{
+  download("proefstuderen.csv", toCSV(loadBookings()), "text/csv");
+});
+els.exportJson.addEventListener("click", ()=>{
+  download("proefstuderen.json", JSON.stringify(loadBookings(), null, 2), "application/json");
+});
+els.importJson.addEventListener("change", async (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  const text = await file.text();
+  let rows = []; try{ rows = JSON.parse(text); }catch(err){ alert("Geen geldige JSON."); return; }
+  if(!Array.isArray(rows)) return alert("JSON verwacht een lijst.");
+  // Merge (op key sid+code)
+  const existing = loadBookings();
+  const key = r => `${r.sid}|${r.code}`;
+  const map = new Map(existing.map(r=>[key(r), r]));
+  rows.forEach(r=> map.set(key(r), r));
+  const merged = Array.from(map.values());
+  saveBookings(merged); refreshAdmin(); renderAvailability();
+  alert("Import voltooid.");
+});
+
+/* ======================
+   Wire up
+====================== */
+els.bookBtn.addEventListener("click", book);
+els.cancelBtn.addEventListener("click", cancelOwn);
+els.loginBtn.addEventListener("click", adminLogin);
+renderLessonOptions(); renderAvailability();
+</script>
+</body>
+</html>
