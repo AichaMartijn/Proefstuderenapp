@@ -4,7 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Proefstuderen – Inschrijven & Dashboard</title>
-<style>
+
+  <link rel="icon" href='data:image/svg+xml;utf8,
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <text y="50" font-size="52">🦋</text>
+</svg>'
+    />
+  
+  <style>
   :root{
     --bg:#0f172a; --card:#111827; --muted:#94a3b8; --primary:#22c55e; --danger:#ef4444; --accent:#38bdf8;
     --text:#e5e7eb; --soft:#1f2937; --ring:#334155;
@@ -175,8 +182,8 @@ const CONFIG = {
   // Admin-code is verborgen als SHA-256 hash van @Ladygeek2025
   ADMIN_CODE_HASH: "DEA4703805DC17616E36355E4F6D86699323655ED9B6168C1F5A3DE2D7CEC932",
   // API koppeling (Google Apps Script Web App)
-  API_BASE: "", // zet hier later je /exec URL
-  API_KEY:  "", // en hier je API key
+  API_BASE: "https://script.google.com/macros/s/AKfycbw6JwROLuWY51KyUs_MEWBXPXUvDGpT-FZJPquMttI4vMoGTx2u8TERjXQ-ucsktjYG/exec", // zet hier later je /exec URL
+  API_KEY:  "XyZ_Proef2025!", // en hier je API key
   lessons: [
     // CVD (max 4)
     { id:"CVD-MA-STAT-1", track:"CVD", name:"CVD · Ma · Statistiek 09:00–13:00 (KZ.B2.311)", capacity:4 },
@@ -189,9 +196,9 @@ const CONFIG = {
     { id:"CVD-WO-DE-2",   track:"CVD", name:"CVD · Wo · Data Engineering 14:00–18:00 (KZ.D6.175)", capacity:4 },
 
     // DBI (max 16)
-    { id:"DBI-MA-DTDT",   track:"DBI", name:"DBI · Ma · Digitale Transformatie & Design Thinking (+ Onderzoeksvaardigheden) 09:00–14:00 (KZ.C0.150)", capacity:16 },
-    { id:"DBI-WO-SAI",    track:"DBI", name:"DBI · Wo · Statistiek & AI 09:00–13:00 (KZ.C0.150)", capacity:16 },
-    { id:"DBI-VR-PMF",    track:"DBI", name:"DBI · Vr · Projectmanagement & Feedback 09:00–14:00 (KZ.C0.150)", capacity:16 },
+    { id:"DBI-MA-DTDT",   track:"DBI", name:"DBI · Ma · Digitale Transformatie & Design Thinking (+ Onderzoeksvaardigheden) 10:00–14:00 (KZ.C0.150)", capacity:16 },
+    { id:"DBI-WO-SAI",    track:"DBI", name:"DBI · Wo · Statistiek & AI 10:00–13:00 (KZ.C0.150)", capacity:16 },
+    { id:"DBI-VR-PMF",    track:"DBI", name:"DBI · Vr · Projectmanagement & Feedback 10:00–14:00 (KZ.C0.150)", capacity:16 },
   ],
 };
 
